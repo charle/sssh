@@ -75,7 +75,7 @@ if [ -z "$isroute" ];then
 fi
 
 if [ $action -eq 1 ];then
-  $SSSH_HOME/scp-expect-upload.sh $user $target $file "$destination" $passwd $port
+  $SSSH_HOME/scp-expect-upload.sh $user $target "$file" "$destination" $passwd $port
 else
   $SSSH_HOME/scp-expect-download.sh $user $target "${file// /\\ }" $destination $passwd $port
 fi
