@@ -3,6 +3,7 @@ set USER [lindex $argv 0]
 set TARGET [lindex $argv 1]
 set PASSWD [lindex $argv 2]
 set ENCODING [lindex $argv 3]
+set PORT [lindex $argv 4]
 set timeout 30
 trap {
 	 set rows [stty rows]
@@ -10,7 +11,7 @@ trap {
 	 stty rows $rows columns $cols < $spawn_out(slave,name)
 } WINCH
 
-spawn luit -encoding $ENCODING ssh -l $USER $TARGET
+spawn luit -encoding $ENCODING ssh -l $USER $TARGET -p $PORT
 
 expect {
  "yes/no" { send "yes\r"; exp_continue }
