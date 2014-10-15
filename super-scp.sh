@@ -28,6 +28,7 @@ targetfullname=`grep "$target" $AUTHFILE | awk '{print $2}'`
 user=`grep "$target" $AUTHFILE | awk '{print $3}' | awk -F ':' '{print $1}'`
 passwd=`grep "$target" $AUTHFILE | awk '{print $3}' | awk -F ':' '{print $2}'`
 encoding=`grep "$target" $AUTHFILE | awk '{print $4}'`
+port=`grep "$target" $AUTHFILE | awk '{print $5}'`
 if [ $count -gt 1 ];then
   echo -e '查找到以下主机'
   arralias=($aliasname)
@@ -35,6 +36,7 @@ if [ $count -gt 1 ];then
   arruser=($user)
   arrpasswd=($passwd)
   arrencoding=($encoding)
+  arrport=($port)
   length=${#arrtarget[@]}
   for ((i=0; i<$length; i++))
   do
@@ -49,6 +51,7 @@ if [ $count -gt 1 ];then
   user=${arruser[$(($choice-1))]}
   passwd=${arrpasswd[$(($choice-1))]}
   encoding=${arrencoding[$(($choice-1))]}
+  port=${arrport[$(($choice-1))]}
 fi
 
 if [ -z $targetfullname ] || [ -z $user ] || [ -z $passwd ];then
@@ -57,6 +60,9 @@ if [ -z $targetfullname ] || [ -z $user ] || [ -z $passwd ];then
 fi
 if [ -z $encoding ];then
   encoding=UTF-8
+fi
+if [ -z $port ];then
+  port=22
 fi
 target=$targetfullname
 
@@ -69,7 +75,7 @@ if [ -z "$isroute" ];then
 fi
 
 if [ $action -eq 1 ];then
-  $SSSH_HOME/scp-expect-upload.sh $user $target $file "$destination" $passwd
+  $SSSH_HOME/scp-expect-upload.sh $user $target $file "$destination" $passwd $port
 else
-  $SSSH_HOME/scp-expect-download.sh $user $target "${file// /\\ }" $destination $passwd
+  $SSSH_HOME/scp-expect-download.sh $user $target "${file// /\\ }" $destination $passwd $port
 fi
