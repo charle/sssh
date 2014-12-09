@@ -55,7 +55,7 @@ route=`echo $target | awk -F'.' '{print $1"."$2".0.0"}'`
 routes=`echo $target | awk -F'.' '{print $1"."$2}'`
 # isroute=`route -n | grep $route`
 isroute=`netstat -nr | grep -w $routes`
-if [ -z "$isroute" ];then
+# if [ -z "$isroute" ];then
   # $SSSH_HOME/ssh-addroute.sh $route
-fi
+# fi
 $SSSH_HOME/ssh-expect.sh $user $target $passwd $encoding $port
