@@ -2,26 +2,11 @@
 SSSH_HOME=`dirname $0`
 AUTHFILE=$SSSH_HOME/ssh-passwd.conf
 
-if [ -z `echo $1 | cut -d' ' -f1 | grep :` ];then
-  action=1 # upload
+if [ -z $1 ];then
+  target=:
 else
-  action=0 # download
+  target=$1
 fi
-
-if [ $action -eq 1 ];then
-  target=`echo $2 | awk -F':' '{print $1}'`
-  file=`echo $2 | awk -F':' '{print $2}'`
-  destination=$1
-else
-  target=`echo $1 | awk -F':' '{print $1}'`
-  file=`echo $1 | awk -F':' '{print $2}'`
-  if [ -z $2 ];then
-    destination=.
-  else
-    destination=$2
-  fi
-fi
-
 count=`grep "$target" $AUTHFILE -c`
 aliasname=`grep "$target" $AUTHFILE | awk '{print $1}'`
 targetfullname=`grep "$target" $AUTHFILE | awk '{print $2}'`
@@ -40,7 +25,7 @@ if [ $count -gt 1 ];then
   length=${#arrtarget[@]}
   for ((i=0; i<$length; i++))
   do
-    echo -e '[\033[4;34m'$(($i+1))'\033[0m]\t'${arralias[$i]}'\t'${arruser[$i]}@${arrtarget[$i]}
+    echo -e '[\033[4;34m'$(($i+1))'\033[0m]\t'${arralias[$i]}'\t'${arruser[$i]}@${arrtarget[$i]}:${arrpasswd[$i]}
   done
   echo -n "请选择序号 (0)："
   read choice
@@ -71,11 +56,6 @@ routes=`echo $target | awk -F'.' '{print $1"."$2}'`
 # isroute=`route -n | grep $route`
 isroute=`netstat -nr | grep -w $routes`
 if [ -z "$isroute" ];then
-  # $SSSH_HOME/ssh-addroute.sh $route
+  $SSSH_HOME/ssh-addroute.sh $route
 fi
-
-if [ $action -eq 1 ];then
-  $SSSH_HOME/scp-expect-upload.sh $user $target "$file" "$destination" $passwd $port
-else
-  $SSSH_HOME/scp-expect-download.sh $user $target "${file// /\\ }" $destination $passwd $port
-fi
+$SSSH_HOME/ssh-expect.sh $user $target $passwd $encoding $port
